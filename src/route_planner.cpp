@@ -10,19 +10,17 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
 
     // TODO 2: Use the m_Model.FindClosestNode method to find the closest nodes to the starting and ending coordinates.
     // Store the nodes you find in the RoutePlanner's start_node and end_node attributes.
-    RouteModel::Node* start_node = &model.FindClosestNode(start_x, start_y);
-    RouteModel::Node* end_node = &model.FindClosestNode(end_x, end_y);
+    start_node = &model.FindClosestNode(start_x, start_y);
+    end_node = &model.FindClosestNode(end_x, end_y);
 }
-
 
 // TODO 3: Implement the CalculateHValue method.
 // Tips:
 // - You can use the distance to the end_node for the h value.
 // - Node objects have a distance method to determine the distance to another node.
 float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
-    return node->distance(*RoutePlanner::end_node);
+    return node->distance(*end_node);
 }
-
 
 // TODO 4: Complete the AddNeighbors method to expand the current node by adding all unvisited neighbors to the open list.
 // Tips:
@@ -30,21 +28,18 @@ float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
 // - For each node in current_node.neighbors, set the parent, the h_value, the g_value. 
 // - Use CalculateHValue below to implement the h-Value calculation.
 // - For each node in current_node.neighbors, add the neighbor to open_list and set the node's visited attribute to true.
-
 void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
     // FindNeighbors of current_node
     current_node->FindNeighbors();
-    // set h (CalculateHValue) and g value for each node in neighbors
-    for (auto &neighbor : current_node->neighbors)
+    for (auto *neighbor : current_node->neighbors)
     {
         neighbor->h_value = CalculateHValue(neighbor);
-        neighbor->g_value = current_node->g_value + 1;
+        neighbor->g_value = current_node->g_value + current_node->distance(*neighbor);
         neighbor->parent = current_node;
         RoutePlanner::open_list.push_back(neighbor);
+        neighbor->visited = true;
     }
-    current_node->visited = true;
 }
-
 
 // TODO 5: Complete the NextNode method to sort the open list and return the next node.
 // Tips:
@@ -53,8 +48,22 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
 // - Remove that node from the open_list.
 // - Return the pointer.
 
-RouteModel::Node *RoutePlanner::NextNode() {
+static bool CompareNodeValue (const RouteModel::Node* node1, const RouteModel::Node* node2)
+{
+  float f1 = node1->g_value + node1->h_value; // f1 = g1 + h1
+  float f2 = node2->g_value + node2->h_value; // f2 = g2 + h2
+  return f1 > f2; 
+}
 
+RouteModel::Node *RoutePlanner::NextNode() {
+    // sort open_list
+    std::sort(RoutePlanner::open_list.begin(), RoutePlanner::open_list.end(), CompareNodeValue);
+    // create pointer to next node
+    RouteModel::Node *next_node = RoutePlanner::open_list.back();
+    // remove next node from open_list
+    RoutePlanner::open_list.pop_back();
+    // return the pointer
+    return next_node;
 }
 
 

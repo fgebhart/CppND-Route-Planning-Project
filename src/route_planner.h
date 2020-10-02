@@ -27,7 +27,7 @@ class RoutePlanner {
     RouteModel::Node *end_node;
 
     float distance = 0.0f;
-    RouteModel &m_Model;
+    RouteModel &m_Model;    // declares a reference
 };
 
 #endif
