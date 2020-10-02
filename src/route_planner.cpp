@@ -39,11 +39,10 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
     {
         neighbor->h_value = CalculateHValue(neighbor);
         neighbor->g_value = current_node->g_value + 1;
-        // TODO what is parent?
-        neighbor->parent = nullptr;
+        neighbor->parent = current_node;
+        RoutePlanner::open_list.push_back(neighbor);
     }
-    
-    // add each node to open_list and set visited to true.
+    current_node->visited = true;
 }
 
 
