@@ -21,7 +21,7 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
 // - Node objects have a distance method to determine the distance to another node.
 float RoutePlanner::CalculateHValue(RouteModel::Node const *node)
 {
-    return node->distance(*end_node); // * is used to access the value of the memory address of end_node
+    return node->distance(*end_node); // * is used to access the value at the memory address of end_node
 }
 
 // TODO 4: Complete the AddNeighbors method to expand the current node by adding all unvisited neighbors to the open list.
@@ -110,7 +110,6 @@ void RoutePlanner::AStarSearch()
 {
     RouteModel::Node *current_node = nullptr;
 
-    std::vector<RouteModel::Node> final_path;
     start_node->visited = true;
     open_list.push_back(start_node);
     while (open_list.size() > 0)
@@ -118,8 +117,7 @@ void RoutePlanner::AStarSearch()
         current_node = NextNode();
         if (current_node == end_node)
         {
-            std::vector<RouteModel::Node> final_path = ConstructFinalPath(current_node);
-            m_Model.path = final_path;
+            m_Model.path = ConstructFinalPath(current_node);;
             return;
         }
         AddNeighbors(current_node);
