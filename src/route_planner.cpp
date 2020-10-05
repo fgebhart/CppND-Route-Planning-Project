@@ -10,7 +10,7 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
 
     // TODO 2: Use the m_Model.FindClosestNode method to find the closest nodes to the starting and ending coordinates.
     // Store the nodes you find in the RoutePlanner's start_node and end_node attributes.
-    start_node = &model.FindClosestNode(start_x, start_y);
+    start_node = &model.FindClosestNode(start_x, start_y);  // & is used to get the memory address of the closest node and store it to start_node
     end_node = &model.FindClosestNode(end_x, end_y);
 }
 
@@ -19,7 +19,7 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
 // - You can use the distance to the end_node for the h value.
 // - Node objects have a distance method to determine the distance to another node.
 float RoutePlanner::CalculateHValue(RouteModel::Node const *node) {
-    return node->distance(*end_node);
+    return node->distance(*end_node);   // * is used to access the value of the memory address of end_node
 }
 
 // TODO 4: Complete the AddNeighbors method to expand the current node by adding all unvisited neighbors to the open list.
@@ -36,7 +36,7 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
         neighbor->h_value = CalculateHValue(neighbor);
         neighbor->g_value = current_node->g_value + current_node->distance(*neighbor);
         neighbor->parent = current_node;
-        RoutePlanner::open_list.push_back(neighbor);
+        open_list.push_back(neighbor);
         neighbor->visited = true;
     }
 }
@@ -60,7 +60,7 @@ RouteModel::Node *RoutePlanner::NextNode() {
     // create pointer to next node
     RouteModel::Node *next_node = RoutePlanner::open_list.back();
     // remove next node from open_list
-    RoutePlanner::open_list.pop_back();
+    open_list.pop_back();
     // return the pointer
     return next_node;
 }
